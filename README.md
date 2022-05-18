@@ -54,26 +54,26 @@ If you are looking for more GAM teaching aids, here's a few resources that might
 
 ### Longer workshops:
 
-* (older, 1/2 day): http://eric-pedersen.github.io/mgcv-esa-workshop/
-* (newer, 1/2 day): https://pedersen-fisheries-lab.github.io/one-day-gam-workshop/
-* (Newer, 3-day): https://github.com/pedersen-fisheries-lab/DFO-3day-gam-workshop
+* [Older 1-day GAM workshop for the Ecological Society of America](http://eric-pedersen.github.io/mgcv-esa-workshop/)
+* [Recent 1-day GAM workshop](https://pedersen-fisheries-lab.github.io/one-day-gam-workshop/)
+* [Recent 3-day workshop for DFO Canada](https://github.com/pedersen-fisheries-lab/DFO-3day-gam-workshop)
 
 
 ### Video tutorials:
 
 * Gavin Simpson: 
-  - https://www.youtube.com/watch?v=sgw4cu8hrZM
-  - https://www.youtube.com/watch?v=Ukfvd8akfco
+  - [Youtube workshop 1](https://www.youtube.com/watch?v=sgw4cu8hrZM)
+  - [Youtube workshop 2](https://www.youtube.com/watch?v=Ukfvd8akfco)
     
 ### Interactive tutorials:
 
 * Noam Ross:
-  - https://noamross.github.io/gams-in-r-course/
+  - [GAMS in R Course](https://noamross.github.io/gams-in-r-course/)
     
 ### Written resources:
 
-* David Lawrence Miller: https://converged.yt/
-* Gavin Simpson: https://fromthebottomoftheheap.net/
-* Simon Wood: 
+* [David Lawrence Miller's blog](https://converged.yt/)
+* [Gavin Simpson's blog](https://fromthebottomoftheheap.net/)
+* Simon Wood (The creator of mgcv): papers and books
   - "Generalized Additive Models: An Introduction with R 2nd ed"
   - 2020: TEST: "Inference and computation with generalized additive models and their extensions"
