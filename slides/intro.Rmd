@@ -1,6 +1,6 @@
 ---
 title: "Generalized Additive Models"
-date: " Nov 2,4 & 9, 2021"
+date: "May 19, 2022, ETN Training Workshop"
 output:
   xaringan::moon_reader:
     css: ['default', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', 'slides.css']
@@ -32,6 +32,7 @@ knitr::opts_chunk$set(echo = FALSE)
   * `dplyr` and `tidyr` for data manipulation
   * `ggplot2` for visualization
   * `gratia` (for visualizing GAMs)
+  * `sf` for manipulating spatial data
 
 ---
 
@@ -84,35 +85,13 @@ knitr::include_graphics("figures/collaborator images.jpg")
 
 ]
 
-
-
----
-
-
-# How I'll be running the workshop:
-
-* Three sessions over 3 days
-
---
-
-* Each session will include:
-
-  * A short presentation on theory
-  * Live coding
-  * Exercises
-
---
-
-
-* The presentation will be recorded, and I'll provide answers to the exercises after each day
-
 ---
 
 
 # How I'll be running the workshop:
 
 
-**Day 1 (today): What's a GAM?** 
+**Part 1: What's a GAM?** 
 
   *  Intro to GAM theory: basis functions and smoothing
 
@@ -120,32 +99,21 @@ knitr::include_graphics("figures/collaborator images.jpg")
 
 --
 
-**Day 2 (Thursday): extending GAMs **
+**Part 2 (after coffee): GAMs for movement data **
 
   * Choosing families to model complex data
   
-  * multi-dimensional smoothers and interactions
-
---
-
-**Day 3 (next Tuesday):  **
-
-  * Making predictions and evaluating uncertainty
-
-  * Model selection and mispecification testing
+  * Multi-dimensional smoothers and interactions
+  
+  * Some of the pitfalls of movement data
 
 ---
-
 
 # How I'll be running the workshop:
 
 
 * If you have any questions, raise your hand or put a question in chat; 
 I'll be checking the chat regularly
-
---
-
-* We'll take a break after the first hour and 15 min 
 
 
 

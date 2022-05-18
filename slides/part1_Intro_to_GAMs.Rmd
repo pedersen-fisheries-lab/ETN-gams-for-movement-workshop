@@ -435,7 +435,7 @@ $\sum_{i=1}^n logLik (y_i|\boldsymbol{\beta}) - \lambda\cdot \boldsymbol{\beta}'
 --
 
 
-The penalty $\lambda$ trades off between how well the model fits the observed data ( $\sum_{i=1}^n logLik (y_i|\boldsymbol{\beta})$ ), and how wiggly the fitted function is ( $\boldsymbol{\beta}'\mathbf{S}\boldsymbol{\beta}$ ). 
+The penalty $\lambda$ trades off between how well the model fits the observed data ( $\sum_{i=1}^n logLik (y_i|\boldsymbol{\beta})$ ), and how wiggly the fitted function is: $\boldsymbol{\beta}'\mathbf{S}\boldsymbol{\beta}$. 
 
 <br />
 --
