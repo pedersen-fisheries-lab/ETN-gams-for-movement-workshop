@@ -83,7 +83,7 @@ Models that look like:
 
 `\(Identity(\mu_i) = \beta_0 + \beta_1\cdot x_{1i} + \beta_2\cdot x_{2i} + \ldots\)`
 
-![](part-1---Intro-to-GAMs_files/figure-html/gaussplot-1.png)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/gaussplot-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -93,7 +93,7 @@ Models that look like:
 
 `\(\text{ln}(\mu_i) = \beta_0 + \beta_1\cdot x_{1i} + \beta_2\cdot x_{2i} + \ldots\)`
 
-![](part-1---Intro-to-GAMs_files/figure-html/poisplot-1.png)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/poisplot-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -104,7 +104,7 @@ Models that look like:
 ## Is this linear?
 
 
-![](part-1---Intro-to-GAMs_files/figure-html/islinear-1.png)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/islinear-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -122,7 +122,7 @@ lm(y ~ x1, data=dat)
 ## `geom_smooth()` using formula 'y ~ x'
 ```
 
-![](part-1---Intro-to-GAMs_files/figure-html/maybe-1.png)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/maybe-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -151,11 +151,11 @@ But it is much easier to fit *linear* functions than nonlinear functions, so GAM
 
 &lt;img src="figures/basis_breakdown.png" width="1789" /&gt;
 
-![](part-1---Intro-to-GAMs_files/figure-html/basis-plot-1.png)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/basis-plot-1.png)&lt;!-- --&gt;
 
 ---
 
-![](part-1---Intro-to-GAMs_files/figure-html/basis-animate-1.gif)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/basis-animate-1.gif)&lt;!-- --&gt;
 
 ---
 
@@ -187,7 +187,7 @@ Polynomials are one type of basis function!
 ... But not a good one. 
 
 
-![](part-1---Intro-to-GAMs_files/figure-html/unnamed-chunk-5-1.gif)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/unnamed-chunk-5-1.gif)&lt;!-- --&gt;
 
 ---
 
@@ -205,7 +205,7 @@ glm(y ~ ns(x,df = 4))
 
 But even cubic splines can overfit:
 
-![](part-1---Intro-to-GAMs_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -280,7 +280,7 @@ Some combinations of parameters correspond to a penalty value of zero; these com
 
 # How changing smoothing parameters affects the fit
 
-![](part-1---Intro-to-GAMs_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -296,14 +296,14 @@ We can create a penalty matrix that penalizes the squared second derivative of t
 
 --
 
-![](part-1---Intro-to-GAMs_files/figure-html/pen-plot-1.png)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/pen-plot-1.png)&lt;!-- --&gt;
 
 ---
 
 
-![](part-1---Intro-to-GAMs_files/figure-html/pen-ani1-1.png)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/pen-ani1-1.png)&lt;!-- --&gt;
 
-![](part-1---Intro-to-GAMs_files/figure-html/pen-ani2-1.gif)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/pen-ani2-1.gif)&lt;!-- --&gt;
 
 ---
 
@@ -314,12 +314,12 @@ Bases designed to "wrap", so the smooth will have the same value at the start an
 
 --
 
-![](part-1---Intro-to-GAMs_files/figure-html/pen-plot-cyclic-1.png)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/pen-plot-cyclic-1.png)&lt;!-- --&gt;
 
 
 ---
 
-![](part-1---Intro-to-GAMs_files/figure-html/basis-animate-cyclic-1.gif)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/basis-animate-cyclic-1.gif)&lt;!-- --&gt;
 
 
 
@@ -332,7 +332,7 @@ The penalty `\(\lambda\)` also determines the *effective degrees of freedom* (ED
 
 
 
-![](part-1---Intro-to-GAMs_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+![](part1_Intro_to_GAMs_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
 
 
 
