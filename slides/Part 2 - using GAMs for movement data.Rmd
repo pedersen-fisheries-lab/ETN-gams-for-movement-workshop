@@ -1,7 +1,6 @@
 ---
-title: "Extending GAMs with interactions"
+title: "GAMs for movement data: interactions, special families, and key considerations"
 author: "Eric Pedersen"
-date: "November 4, 2021"
 output:
   xaringan::moon_reader:
     css: ['default', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', 'slides.css']
@@ -48,23 +47,6 @@ anim_dev <- 'png'
 anim_res <- 200
 ```
 
-# Reminder from Tuesday:
-
-A GLM is: 
-  - a distribution for our data + 
-  - a link function + 
-  - a linear model of the transformed mean as a function of covariates
-
---
-
-A GAM is a GLM except:
-  - covariate functions can be nonlinear, built from basis functions of covariates
-  - Estimated with penalized likelihood, penalizing overly wiggly functions
-  
-  
----
-
-
 # So far:
 
 - One-dimensional smooth models
@@ -78,11 +60,19 @@ These are good models, but there's lots more to see!
 
 # New things
 
+
+
 - distribution of the data
   - `family=` argument
-- visually checking model assumptions when building models
+  - special cases: counts, survival data, categorical
+  
+  
 - adding dimensions to your smooths
-  - space and time
+  - Interactions between covariates
+  - Individual-specific curves (HGAMs)
+  
+  
+- (if time) Headaches and nightmares: dealing with autocorrelation in data
 
 
 ---
@@ -97,6 +87,13 @@ These are good models, but there's lots more to see!
   - `poisson` ( counts, $y \in \{0, 1, 2, \ldots\}$ )
   - `Gamma` ( positive, $y>0$ )
 
+---
+
+# Examples from movement data:
+
+* Binomial: behavioural state, location (in-shore vs. offshore)
+* Count: Number of observations at a station, number of encounters
+* Continuous: depth or acceleration (Gamma), temperature (normal)
 
 ---
 
@@ -170,43 +167,6 @@ Other options?
   - great for CPUE-type data
   - works on non-count positive data as well
   - $\text{Var}\left(\text{y}\right) = \phi\mathbb{E}(\text{y})^q$
-
----
-
-# Tweedie distribution
-
-.pull-left[
-```{r tweedie, echo=FALSE, fig.height=5, fig.width=5}
-par(ps=17)
-library(RColorBrewer)
-library(mgcv)
-
-# taken from ?mgcv::ldTweedie
-y <- seq(1e-10,10,length=1000)
-p <- seq(1.2, 1.6, by=0.2)
-phi <- 1
-fy <- exp(ldTweedie(y,mu=2,p=p[1],phi=phi)[,1])
-
-rr <- brewer.pal(8,"Dark2")
-  
-plot(y, fy, type="n", ylim=c(0,1), main="Tweedie density as q changes",
-     xlab="Count", ylab="Density")
-for (i in 1:length(p)) {
-  fy <- exp(ldTweedie(y, mu=2, p=p[i], phi=phi)[, 1])
-  lines(y, fy, col=rr[i], lwd=2.5)
-}
-
-legend(x="topright", legend=p, fill=rr, inset=0.05)
-
-```
-(NB there is a point mass at zero not plotted)
-]
-.pull-right[
--  $\text{Var}\left(\text{y}\right) = \phi\mathbb{E}(\text{y})^q$
-- Poisson is $q=1$ 
-- We estimate $q$ and $\phi$ for `tw`
-- We set $q$ and estimate $\phi$ for `Tweedie`
-]
 
 ---
 
@@ -313,40 +273,10 @@ summary(rich_depthl10)
   - `model$family$linkfun()` gives link function
   - `model$family$linkinv()` gives inverse link
 
----
 
-# How can we check whether our assumed distribution is adequate?
-
-
-```{r pois-rich-check1, fig.height=4}
-par(mfrow=c(2,2))
-gam.check(rich_depthl10)
-```
+## 
 
 ---
-
-
-# How can we check whether our assumed distribution is adequate?
-
-
-```{r pois-rich-check2,fig.show="hide"}
-par(mfrow=c(2,2))
-gam.check(rich_depthl10)
-```
-
----
-
-# How can we check whether our assumed distribution is adequate?
-
-```{r pois-rich-check3, fig.height=4}
-
-appraise(rich_depthl10)
-
-```
-
----
-
---- 
 
 # Let's pause the talk here to try this ourselves
 

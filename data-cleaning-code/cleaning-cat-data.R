@@ -248,16 +248,23 @@ dryforest_map <- ggplot() +
 
 classification_labels <- classification%>%
   transmute(cover_type = factor(ChangeTo),
-         cover_label = Description2)
+         cover_label = Description2)%>%
+  group_by(cover_type)%>%
+  summarize( cover_label = cover_label[1])
 
 #extracts covariates
-panther_steps_withcovs <- st_join(layers,panther_steps,what = "inner" )%>%
+panther_steps_withcovs <- st_join(panther_steps,
+                                  st_as_sf(layers,as_points = FALSE))%>%
   left_join(classification_labels)%>%
   #filtering out observations occurring in open water
-  filter(!cover_type==10)
+  filter(!cover_type==10)%>%
+  #making data nonspatial to save more easily
+  st_set_geometry(NULL)%>%
+  #filter out any alternative steps where the true step was filtered
+  group_by(  step_stratum )%>%
+  filter(any(is_obs==1))
 
-
-write.csv(panther_steps_withcovs, file = "data/panther_stepsel_data.csv")
+write.csv( panther_steps_withcovs, "data/panther_stepsel.csv",row.names = FALSE)
 
 ggsave(filename = "figures/habitat_map.png",plot = landscape_class_map,width = 8,height=9,units = "in",dpi = 400)
 ggsave(filename = "figures/dryforest_map.png",plot = dryforest_map,width = 8,height=9,units = "in",dpi = 400)

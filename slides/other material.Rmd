@@ -1,0 +1,27 @@
+## Other references
+
+### Longer workshops:
+
+(older, 1/2 day): http://eric-pedersen.github.io/mgcv-esa-workshop/
+(newer, 1/2 day): https://pedersen-fisheries-lab.github.io/one-day-gam-workshop/
+(Newer, 3-day): https://github.com/pedersen-fisheries-lab/DFO-3day-gam-workshop
+
+
+### Video tutorials:
+
+* Gavin Simpson: 
+  - https://www.youtube.com/watch?v=sgw4cu8hrZM
+  - https://www.youtube.com/watch?v=Ukfvd8akfco
+    
+### Interactive tutorials:
+
+* Noam Ross:
+  - https://noamross.github.io/gams-in-r-course/
+    
+### Written resources:
+
+* David Lawrence Miller: https://converged.yt/
+* Gavin Simpson: https://fromthebottomoftheheap.net/
+* Simon Wood: 
+  - "Generalized Additive Models: An Introduction with R 2nd ed"
+  - 2020: TEST: "Inference and computation with generalized additive models and their extensions"

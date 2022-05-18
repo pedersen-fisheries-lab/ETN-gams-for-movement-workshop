@@ -1,7 +1,6 @@
 # example and practical scripts for part 02!
 
 # load requisite packages ####
-library('here')
 library('mgcv')
 library('tidyr')
 library('dplyr')
