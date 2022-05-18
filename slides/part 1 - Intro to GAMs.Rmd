@@ -1,7 +1,5 @@
 ---
 title: "What are GAMs?"
-author: "Eric Pedersen"
-date: "November 2nd, 2021"
 output:
   xaringan::moon_reader:
     css: ['default', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', 'slides.css']
@@ -28,7 +26,6 @@ library('purrr')
 library('mvnfast')
 library("tibble")
 library('gganimate')
-library('cowplot')
 library('tidyr')
 library("knitr")
 library("viridis")
@@ -88,7 +85,7 @@ $link(\mu_i) = Intercept + \beta_1\cdot x_{1i} + \beta_2\cdot x_{2i} + \ldots$
 
   <br />
 
- The model is fit (not really...) by maximizing the log-likelihood:
+ Model is fit by maximizing the log-likelihood:
 
 
 $\text{maximize}  \sum_{i=1}^n logLik (Some\ distribution(y_i|\boldsymbol{\beta})$
@@ -799,7 +796,7 @@ $y_{i,j} =\alpha + \beta_j + \epsilon_i$, $\beta_j \sim Normal(0, \sigma_{\beta}
 
 ---
 
-# Another connection with Bayesian models
+# Connection with Bayesian models
 
 
 .pull-left[ 
@@ -819,7 +816,7 @@ knitr::include_graphics("figures/Scooby doo - GAM - bayes.jpg")
 ]
 ---
 
-# Another connection with Bayesian models
+# Connection with Bayesian models
 
 
 .pull-left[ 
