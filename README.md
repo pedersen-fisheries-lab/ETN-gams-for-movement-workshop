@@ -54,9 +54,9 @@ If you are looking for more GAM teaching aids, here's a few resources that might
 
 ### Longer workshops:
 
-(older, 1/2 day): http://eric-pedersen.github.io/mgcv-esa-workshop/
-(newer, 1/2 day): https://pedersen-fisheries-lab.github.io/one-day-gam-workshop/
-(Newer, 3-day): https://github.com/pedersen-fisheries-lab/DFO-3day-gam-workshop
+* (older, 1/2 day): http://eric-pedersen.github.io/mgcv-esa-workshop/
+* (newer, 1/2 day): https://pedersen-fisheries-lab.github.io/one-day-gam-workshop/
+* (Newer, 3-day): https://github.com/pedersen-fisheries-lab/DFO-3day-gam-workshop
 
 
 ### Video tutorials:
