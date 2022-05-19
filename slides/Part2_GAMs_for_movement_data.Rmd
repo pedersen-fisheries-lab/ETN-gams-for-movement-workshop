@@ -45,6 +45,12 @@ anim_width <- 1000
 anim_height <- anim_width / 1.77777777
 anim_dev <- 'png'
 anim_res <- 200
+
+xaringanExtra::embed_xaringan(
+  url = "https://build-your-own-universe.netlify.app",
+  ratio = "16:9"
+)
+xaringanExtra::use_scribble()
 ```
 
 # So far:
@@ -67,14 +73,16 @@ These are good models, but there's lots more to see!
   - special cases: counts, survival data, categorical
   
   
+  
+- Headaches and nightmares with high-frequency movement data:
+  - Speeding up computation for big data
+  - dealing with autocorrelation and spatial dependence
+  
 - adding dimensions to your smooths
   - Interactions between covariates
   - Individual-specific curves (HGAMs)
   
   
-- (if time) Headaches and nightmares with movement data:
-  - Speeding up computation for big data
-  - dealing with autocorrelation in data
 
 
 ---
@@ -163,12 +171,11 @@ Other options?
   - $\text{Var}(y) = \mathbb{E}(y) + \kappa\times\mathbb{E}(y)^2$ 
   - models overdispersed counts
   
+
 --
 
-- `tw`/`Tweedie` ( $y \geq 0$)
-  - Can handle both zero and positive values
-  - Example usage: depth from bottom for benthopelagic species
-  - $\text{Var}\left(\text{y}\right) = \phi\mathbb{E}(\text{y})^q$
+- Models for categories:
+  - `ocat`, `multinom`
 
 ---
 
@@ -218,8 +225,30 @@ legend(x="topright", legend=disps, fill=rr, inset=0.05)
   
 
 
+--
+
+- `tw`/`Tweedie` ( $y \geq 0$)
+  - Can handle both zero and positive values
+  - Example usage: depth from bottom for benthopelagic species
+  - $\text{Var}\left(\text{y}\right) = \phi\mathbb{E}(\text{y})^q$
 
 
+---
+
+## Families of special interest for movement ecologists:
+
+- Location-scale models
+  - `gaulss`,`gammals`, `gevless`
+  - Used for modelling multiple parameters at once (e.g. mean and variance)
+  - GEV: models "extreme" values:maxima or minima (make sure you know what it's doing!)
+  
+
+
+--
+
+- Multivariate models:
+  - `mvn`
+  - e.g.: model speed and acceleration
 
 ---
 
@@ -233,42 +262,118 @@ legend(x="topright", legend=disps, fill=rr, inset=0.05)
   - `model$family$linkfun()` gives link function
   - `model$family$linkinv()` gives inverse link
 
-
-## 
-
 ---
 
 # Let's pause the talk here to try this ourselves
+
 
 ---
 
 class: inverse middle center big-subsection
 
-## Beyond one dimensional smooths:<br/> space, time and more
+## Dealing with big messy data issues in movement data
+
 
 ---
 
-# 🦐🦐 Example 🦐🦐
+## Computation time:
 
-.pull-left[
-```{r data-load}
-trawls <- read.csv(here("data/trawl_nl.csv"))
-trawls_2010 <- filter(trawls, year==2010)
-range(trawls_2010$shrimp)
-head(trawls_2010$shrimp, 3)
-```
+Big data sets, many smooths complex smooths = a lot of memory + computation time
 
-Not normal, not integer!
 
-]
+---
 
-.pull-right[
+## Computation time:
 
-```{r, fig.height=5, fig.width=5, echo=FALSE}
-hist(trawls_2010$shrimp, xlab="Biomass", main="")
-```
 
-]
+Solutions: 
+
+* Choose your smoothers carefully; 
+
+* use `bam` instead of `gam`: can handle big data sets, but not huge speed-up
+
+* use fewer basis functions
+
+* `discrete = TRUE` in `bam`
+
+
+* Think about subsampling your data 
+
+---
+
+## Statistical dependency:
+
+Many observations occurring in close succession: close observations are similar to one another
+
+---
+
+## Problems arising from dependency: 
+
+1. Your standard errors are bigger than they should be, and your smooths will be more wiggly than they should be
+
+--
+
+2. Covariates may vary slowly with time or space: makes it hard to distinguish if change in behaviour is due to the covariate or to a change in internal state
+
+
+---
+
+## How can we deal with dependency in GAMs?
+
+Basic options:
+
+**Subsample, or cross-validate**
+
+--
+
+* Upside: simple to understand + explain
+
+--
+
+* Downside: losing some data, have to decide on subsampling frequency
+
+
+---
+
+## How can we deal with dependency in GAMs?
+
+
+**Add a smoother to model the dependency: e.g. `gam(y ~ s(speed) + s(time)`)**
+
+--
+
+* Upside: explicitly models dependency with smoothers, can do it all in one model
+
+--
+
+* Downside: need to assume model is correct, can be slow, can lead to strong fixed effects disappearing (see Hodges and Reich 2010: "Adding spatially-correlated errors can mess up the fixed effect you love") 
+
+---
+
+## How can we deal with dependency in GAMs?
+
+
+**Adjust effective sample size to account for dependency: `gamma` parameter**
+
+--
+
+* Upsides: no need to model time
+
+--
+
+* Downside: does not solve the Hodges and Reich problem, have to figure out a model to calculate effective sample size 
+
+
+---
+
+# Let's pause the talk here to try this ourselves
+
+
+---
+
+class: inverse middle center big-subsection
+
+## Interactions:<br/> spatial smoothers, tensor products, and modelling individual variation with HGAMs
 
 ---
 
@@ -368,12 +473,6 @@ draw(spatial_shrimp)
 summary(spatial_shrimp)
 
 ```
-
----
-
-class: inverse middle center big-subsection
-
-#  Let's try this with an example
 
 
 ---
@@ -480,98 +579,8 @@ summary(shrimp_ti)
 
 class: inverse middle center big-subsection
 
-## Now give it a try!
+## Let's work through a couple examples
 
-
----
-class: inverse middle center big-subsection
-
-## Building spatio-temporal models
-
----
-
-# 🦐🗺🗓
-
-```{r biom-space-time-plot, fig.height=8, fig.width=15, echo=FALSE}
-ggplot(trawls) +
-  geom_point(aes(x=long, y=lat, size=shrimp), alpha=.5) +
-  geom_sf(data=coast) +
-  facet_wrap(~year, ncol=5)
-```
-
-
----
-
-# Space x time
-
-- We had a 2d spatial model, add time?
-  - `te(x,y,year)` ?
-- Want that 2d smooth rather than `te(lat, long)`?
-- `d=` groups covariates
-  - `te(x, y, year, d=c(2,1))` gives `x,y` smooth and `year` smooth tensor
-- Assuming default `k=` and `bs=` for bases
-
----
-
-# Fiddling
-
-- Often fewer temporal replicates
-  - Fewer years than unique locations
-  - `k=` smaller for temporal covariate?
-- Use cubic spline basis for time?
-  - simpler basis, even knot placement
-- When using `ti()` everything needs to match up!
-
----
-
-# 🦐🗺🗓
-
-Putting that together:
-
-```{r ti-xyt}
-
-shrimp_xyt <- gam(shrimp ~ ti(y,x, year, d=c(2,1), 
-                              bs=c("tp", "cr"), k=c(20, 5)) +
-                           s(x, y, bs="tp", k=20) +
-                           s(year,  bs="cr", k=5),
-                data=trawls,
-                family=tw,
-                method="REML")
-```
-
----
-
-# `summary`
-
-```{r xyt-summary, echo=FALSE}
-summary(shrimp_xyt)
-
-```
-
----
-
-# `ti(x, y)` and `ti(year)`
-
-```{r ti-xyt-plot-xy-t, echo=FALSE, results="hide", fig.width=7}
-par(mfrow=c(1, 2))
-plot(shrimp_xyt, select=2, scheme=2, asp=1)
-plot(shrimp_xyt, select=3, scheme=2, scale=0, seWithMean=TRUE)
-
-
-```
----
-
-# `ti(x, y, year)`
-
-```{r ti-xyt-plot-xyt, echo=FALSE, results="hide", fig.width=7}
-plot(shrimp_xyt, select=1, scheme=2, asp=1)
-
-```
-
-
-
----
-class: inverse middle center big-subsection
 
 ## Recap
 
@@ -582,13 +591,12 @@ class: inverse middle center big-subsection
 - set response distribution
   - `family=` argument
   - see `?family`
-- spatial smoothing
+- dealing with large and dependent data sets
+- isotrophic smoothing for space
   - `s(x,y)` for projected coordinates
   - `te(lat, long)` for latitude and longitude (better to project?)
 - interactions
   - `te(covar1, covar2, ...)`
   - `ti()` to decompose the effects
-- space and time
-  - `te(x, y, time, d=c(2,1))`
-  - again `ti()` to decompose
+
 

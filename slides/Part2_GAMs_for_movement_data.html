@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>GAMs for movement data: interactions, special families, and key considerations</title>
+    <title>GAMs for movement data: families, interactions, and dealing with autocorrelation</title>
     <meta charset="utf-8" />
     <meta name="author" content="Eric Pedersen" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <script src="libs/fitvids/fitvids.min.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30,"palette":[]}) })</script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
   </head>
@@ -14,7 +19,7 @@
 class: inverse, middle, left, my-title-slide, title-slide
 
 .title[
-# GAMs for movement data: interactions, special families, and key considerations
+# GAMs for movement data: families, interactions, and dealing with autocorrelation
 ]
 .author[
 ### Eric Pedersen
@@ -45,12 +50,16 @@ These are good models, but there's lots more to see!
   - special cases: counts, survival data, categorical
   
   
+  
+- Headaches and nightmares with high-frequency movement data:
+  - Speeding up computation for big data
+  - dealing with autocorrelation and spatial dependence
+  
 - adding dimensions to your smooths
   - Interactions between covariates
   - Individual-specific curves (HGAMs)
   
   
-- (if time) Headaches and nightmares: dealing with autocorrelation in data
 
 
 ---
@@ -93,7 +102,7 @@ These are good models, but there's lots more to see!
 ![](Part2_GAMs_for_movement_data_files/figure-html/species-gala-plots2-1.svg)&lt;!-- --&gt;
 ---
 
-# Special count distributions
+# Special "count-like" distributions
 
 
 Other options?
@@ -108,12 +117,11 @@ Other options?
   - `\(\text{Var}(y) = \mathbb{E}(y) + \kappa\times\mathbb{E}(y)^2\)` 
   - models overdispersed counts
   
+
 --
 
-- `tw`/`Tweedie` ( `\(y \geq 0\)`)
-  - great for CPUE-type data
-  - works on non-count positive data as well
-  - `\(\text{Var}\left(\text{y}\right) = \phi\mathbb{E}(\text{y})^q\)`
+- Models for categories:
+  - `ocat`, `multinom`
 
 ---
 
@@ -131,80 +139,39 @@ Other options?
 
 ---
 
-# 🐟🐠🐡 Example 🐡🐠🐟
+## Families of special interest for movement ecologists:
 
-.pull-left[
-- Let's look at species richness as a function of depth
-- Number of species in each trawl (counts!)
+- Cox Proportional Hazard: 
 
-
-```r
-trawls &lt;- read.csv(here("data/trawl_nl.csv"))
-```
-]
-
-.pull-right[
-![](Part2_GAMs_for_movement_data_files/figure-html/richness-violin-1.svg)&lt;!-- --&gt;
-
-]
-
----
-
-# 🐟🐠🐡 Example 🐡🐠🐟
-
-.pull-left[
-- Does richness vary with depth?
-- Let's try assuming the response is Poisson!
+  - Model of "survival data": modelling relative probabilities of "survival" or "death" as function of covariates
+  - Used for step selection: "death" = taken step, "survival" = alternative step
+  
 
 
-```r
-rich_depthl10 &lt;- gam(richness~s(log10(depth),k = 30), 
-                     family=poisson,
-              method="REML", 
-              data=trawls)
-```
-]
+--
 
-.pull-right[
-
-```r
-plot(rich_depthl10, shade=TRUE)
-```
-
-![](Part2_GAMs_for_movement_data_files/figure-html/plot-year-rich-1.svg)&lt;!-- --&gt;
-]
-
-
+- `tw`/`Tweedie` ( `\(y \geq 0\)`)
+  - Can handle both zero and positive values
+  - Example usage: depth from bottom for benthopelagic species
+  - `\(\text{Var}\left(\text{y}\right) = \phi\mathbb{E}(\text{y})^q\)`
 
 
 ---
 
-# `summary` output
+## Families of special interest for movement ecologists:
+
+- Location-scale models
+  - `gaulss`,`gammals`, `gevless`
+  - Used for modelling multiple parameters at once (e.g. mean and variance)
+  - GEV: models "extreme" values:maxima or minima (make sure you know what it's doing!)
+  
 
 
-```
-## 
-## Family: poisson 
-## Link function: log 
-## 
-## Formula:
-## richness ~ s(log10(depth), k = 30)
-## 
-## Parametric coefficients:
-##             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) 3.155047   0.003212   982.3   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##                   edf Ref.df Chi.sq p-value    
-## s(log10(depth)) 12.65   15.6  972.3  &lt;2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## R-sq.(adj) =  0.157   Deviance explained = 15.7%
-## -REML =  12983  Scale est. = 1         n = 4152
-```
+--
+
+- Multivariate models:
+  - `mvn`
+  - e.g.: model speed and acceleration
 
 ---
 
@@ -218,52 +185,118 @@ plot(rich_depthl10, shade=TRUE)
   - `model$family$linkfun()` gives link function
   - `model$family$linkinv()` gives inverse link
 
-
-## 
-
 ---
 
 # Let's pause the talk here to try this ourselves
+
 
 ---
 
 class: inverse middle center big-subsection
 
-## Beyond one dimensional smooths:&lt;br/&gt; space, time and more
+## Dealing with big messy data issues in movement data
+
 
 ---
 
-# 🦐🦐 Example 🦐🦐
+## Computation time:
 
-.pull-left[
+Big data sets, many smooths complex smooths = a lot of memory + computation time
 
-```r
-trawls &lt;- read.csv(here("data/trawl_nl.csv"))
-trawls_2010 &lt;- filter(trawls, year==2010)
-range(trawls_2010$shrimp)
-```
 
-```
-## [1]    0.000 2293.699
-```
+---
 
-```r
-head(trawls_2010$shrimp, 3)
-```
+## Computation time:
 
-```
-## [1]  0.1202384  0.9619069 13.6270140
-```
 
-Not normal, not integer!
+Solutions: 
 
-]
+* Choose your smoothers carefully; 
 
-.pull-right[
+* use `bam` instead of `gam`: can handle big data sets, but not huge speed-up
 
-![](Part2_GAMs_for_movement_data_files/figure-html/unnamed-chunk-1-1.svg)&lt;!-- --&gt;
+* use fewer basis functions
 
-]
+* `discrete = TRUE` in `bam`
+
+
+* Think about subsampling your data 
+
+---
+
+## Statistical dependency:
+
+Many observations occurring in close succession: close observations are similar to one another
+
+---
+
+## Problems arising from dependency: 
+
+1. Your standard errors are bigger than they should be, and your smooths will be more wiggly than they should be
+
+--
+
+2. Covariates may vary slowly with time or space: makes it hard to distinguish if change in behaviour is due to the covariate or to a change in internal state
+
+
+---
+
+## How can we deal with dependency in GAMs?
+
+Basic options:
+
+**Subsample, or cross-validate**
+
+--
+
+* Upside: simple to understand + explain
+
+--
+
+* Downside: losing some data, have to decide on subsampling frequency
+
+
+---
+
+## How can we deal with dependency in GAMs?
+
+
+**Add a smoother to model the dependency: e.g. `gam(y ~ s(speed) + s(time)`)**
+
+--
+
+* Upside: explicitly models dependency with smoothers, can do it all in one model
+
+--
+
+* Downside: need to assume model is correct, can be slow, can lead to strong fixed effects disappearing (see Hodges and Reich 2010: "Adding spatially-correlated errors can mess up the fixed effect you love") 
+
+---
+
+## How can we deal with dependency in GAMs?
+
+
+**Adjust effective sample size to account for dependency: `gamma` parameter**
+
+--
+
+* Upsides: no need to model time
+
+--
+
+* Downside: does not solve the Hodges and Reich problem, have to figure out a model to calculate effective sample size 
+
+
+---
+
+# Let's pause the talk here to try this ourselves
+
+
+---
+
+class: inverse middle center big-subsection
+
+## Interactions:&lt;br/&gt; spatial smoothers, tensor products, and modelling individual variation with HGAMs
 
 ---
 
@@ -381,12 +414,6 @@ draw(spatial_shrimp)
 ## R-sq.(adj) =  0.309   Deviance explained = 36.6%
 ## -REML = 3241.7  Scale est. = 36132     n = 482
 ```
-
----
-
-class: inverse middle center big-subsection
-
-## Now give it a try!
 
 
 ---
@@ -524,107 +551,8 @@ shrimp_ti &lt;- gam(shrimp ~ ti(temp_bottom, depth) +
 
 class: inverse middle center big-subsection
 
-## Now give it a try!
+## Let's work through a couple examples
 
-
----
-class: inverse middle center big-subsection
-
-## Building spatio-temporal models
-
----
-
-# 🦐🗺🗓
-
-![](Part2_GAMs_for_movement_data_files/figure-html/biom-space-time-plot-1.svg)&lt;!-- --&gt;
-
-
----
-
-# Space x time
-
-- We had a 2d spatial model, add time?
-  - `te(x,y,year)` ?
-- Want that 2d smooth rather than `te(lat, long)`?
-- `d=` groups covariates
-  - `te(x, y, year, d=c(2,1))` gives `x,y` smooth and `year` smooth tensor
-- Assuming default `k=` and `bs=` for bases
-
----
-
-# Fiddling
-
-- Often fewer temporal replicates
-  - Fewer years than unique locations
-  - `k=` smaller for temporal covariate?
-- Use cubic spline basis for time?
-  - simpler basis, even knot placement
-- When using `ti()` everything needs to match up!
-
----
-
-# 🦐🗺🗓
-
-Putting that together:
-
-
-```r
-shrimp_xyt &lt;- gam(shrimp ~ ti(y,x, year, d=c(2,1), 
-                              bs=c("tp", "cr"), k=c(20, 5)) +
-                           s(x, y, bs="tp", k=20) +
-                           s(year,  bs="cr", k=5),
-                data=trawls,
-                family=tw,
-                method="REML")
-```
-
----
-
-# `summary`
-
-
-```
-## 
-## Family: Tweedie(p=1.686) 
-## Link function: log 
-## 
-## Formula:
-## shrimp ~ ti(y, x, year, d = c(2, 1), bs = c("tp", "cr"), k = c(20, 
-##     5)) + s(x, y, bs = "tp", k = 20) + s(year, bs = "cr", k = 5)
-## 
-## Parametric coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  3.89917    0.03127   124.7   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##                edf Ref.df       F p-value    
-## ti(y,x,year) 47.65  58.59   8.144  &lt;2e-16 ***
-## s(x,y)       18.88  19.00 180.295  &lt;2e-16 ***
-## s(year)       3.87   3.98 108.490  &lt;2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## R-sq.(adj) =  0.136   Deviance explained = 45.2%
-## -REML =  19084  Scale est. = 9.3801    n = 4152
-```
-
----
-
-# `ti(x, y)` and `ti(year)`
-
-![](Part2_GAMs_for_movement_data_files/figure-html/ti-xyt-plot-xy-t-1.svg)&lt;!-- --&gt;
----
-
-# `ti(x, y, year)`
-
-![](Part2_GAMs_for_movement_data_files/figure-html/ti-xyt-plot-xyt-1.svg)&lt;!-- --&gt;
-
-
-
----
-class: inverse middle center big-subsection
 
 ## Recap
 
@@ -635,15 +563,14 @@ class: inverse middle center big-subsection
 - set response distribution
   - `family=` argument
   - see `?family`
-- spatial smoothing
+- dealing with large and dependent data sets
+- isotrophic smoothing for space
   - `s(x,y)` for projected coordinates
   - `te(lat, long)` for latitude and longitude (better to project?)
 - interactions
   - `te(covar1, covar2, ...)`
   - `ti()` to decompose the effects
-- space and time
-  - `te(x, y, time, d=c(2,1))`
-  - again `ti()` to decompose
+
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
