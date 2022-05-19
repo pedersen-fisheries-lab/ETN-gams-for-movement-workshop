@@ -188,7 +188,7 @@ for(disp in disps){
 plot(range(y), range(fymat), type="n", ylab="Density", xlab="Count", cex.lab=1.5,
      main="")
 
-rr <- brewer.pal(8,"Dark2")
+rr <- RColorBrewer::brewer.pal(8,"Dark2")
 
 for(i in 1:ncol(fymat)){
   lines(y, fymat[,i], type="l", col=rr[i], lwd=2)
@@ -207,59 +207,9 @@ legend(x="topright", legend=disps, fill=rr, inset=0.05)
 
 ---
 
-# 🐟🐠🐡 Example 🐡🐠🐟
+## Families of special interest for movement ecologists:
 
-.pull-left[
-- Let's look at species richness as a function of depth
-- Number of species in each trawl (counts!)
-
-```{r richness}
-trawls <- read.csv(here("data/trawl_nl.csv"))
-```
-]
-
-.pull-right[
-```{r richness-violin, fig.height=5, fig.width=5, echo=FALSE}
-ggplot(trawls, aes(x =depth, y=richness)) +
-  geom_point()+
-  scale_y_log10()+
-  labs(x="Depth (m)", y="Number of Species")
-```
-
-]
-
----
-
-# 🐟🐠🐡 Example 🐡🐠🐟
-
-.pull-left[
-- Does richness vary with depth?
-- Let's try assuming the response is Poisson!
-
-```{r pois-rich-fit}
-rich_depthl10 <- gam(richness~s(log10(depth),k = 30), 
-                     family=poisson,
-              method="REML", 
-              data=trawls)
-```
-]
-
-.pull-right[
-```{r plot-year-rich, fig.width=5}
-plot(rich_depthl10, shade=TRUE)
-```
-]
-
-
-
-
----
-
-# `summary` output
-
-```{r rich-sum, echo=FALSE}
-summary(rich_depthl10)
-```
+- Cox Proportional Hazarrd
 
 ---
 

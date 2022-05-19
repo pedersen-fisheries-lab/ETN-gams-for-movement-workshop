@@ -36,8 +36,22 @@ library('transformr')
 library('patchwork')
 library('splines2')
 opts_chunk$set(cache=TRUE, echo=FALSE)
+
+xaringanExtra::embed_xaringan(
+  url = "https://build-your-own-universe.netlify.app",
+  ratio = "16:9"
+)
+xaringanExtra::use_scribble()
 ```
 
+## What are GAMs?
+
+GAMs: **G**eneralized **A**dditive **M**odels
+
+GAMs are regression models: they fit *nonlinear* functions of covariates to predict means (or other moments) of an outcome
+
+
+---
 
 ## Overview
 
@@ -73,6 +87,7 @@ $link(\mu_i) = Intercept + \beta_1\cdot x_{1i} + \beta_2\cdot x_{2i} + \ldots$
   <br />
 
  The average value of the response, $\mu_i$, assumed to be a linear combination of the covariates, $x_{ji}$, with an offset
+ 
 ---
 
 ##  What is a Generalized Linear model (GLM)?
@@ -492,7 +507,7 @@ p1  + p2 + p3
 
 # The default smoother: thin-plate regression splines
 
-We can create a penalty matrix that penalizes the squared second derivative of the curve across the range of the observed x-values:
+Penalizes the squared second derivative of the curve across the range of the observed x-values:
 
 $\int_{x_1}^{x_n} [f^{\prime\prime}]^2 dx = \boldsymbol{\beta}^{\mathsf{T}}\mathbf{S}\boldsymbol{\beta}$
 

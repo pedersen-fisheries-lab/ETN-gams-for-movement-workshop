@@ -21,6 +21,14 @@ class: inverse, middle, left, my-title-slide, title-slide
 
 
 
+## What are GAMs?
+
+GAMs: **G**eneralized **A**dditive **M**odels
+
+GAMs are regression models: they fit *nonlinear* functions of covariates to predict means (or other moments) of an outcome
+
+
+---
 
 ## Overview
 
@@ -56,6 +64,7 @@ Models that look like:
   &lt;br /&gt;
 
  The average value of the response, `\(\mu_i\)`, assumed to be a linear combination of the covariates, `\(x_{ji}\)`, with an offset
+ 
 ---
 
 ##  What is a Generalized Linear model (GLM)?
@@ -264,7 +273,7 @@ We can modify this to add a *penalty* on the size of the model parameters:
 --
 
 
-The penalty `\(\lambda\)` trades off between how well the model fits the observed data ( `\(\sum_{i=1}^n logLik (y_i|\boldsymbol{\beta})\)` ), and how wiggly the fitted function is ( `\(\boldsymbol{\beta}'\mathbf{S}\boldsymbol{\beta}\)` ). 
+The penalty `\(\lambda\)` trades off between how well the model fits the observed data ( `\(\sum_{i=1}^n logLik (y_i|\boldsymbol{\beta})\)` ), and how wiggly the fitted function is: `\(\boldsymbol{\beta}'\mathbf{S}\boldsymbol{\beta}\)`. 
 
 &lt;br /&gt;
 --
@@ -289,7 +298,7 @@ Some combinations of parameters correspond to a penalty value of zero; these com
 
 # The default smoother: thin-plate regression splines
 
-We can create a penalty matrix that penalizes the squared second derivative of the curve across the range of the observed x-values:
+Penalizes the squared second derivative of the curve across the range of the observed x-values:
 
 `\(\int_{x_1}^{x_n} [f^{\prime\prime}]^2 dx = \boldsymbol{\beta}^{\mathsf{T}}\mathbf{S}\boldsymbol{\beta}\)`
 
