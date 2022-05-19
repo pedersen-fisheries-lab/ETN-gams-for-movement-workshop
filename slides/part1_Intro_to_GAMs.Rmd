@@ -60,6 +60,8 @@ GAMs are regression models: they fit *nonlinear* functions of covariates to pred
 - How do GAMs work? (*Roughly*)
 - What is smoothing?
 - Fitting and plotting simple models
+- Evaluating  model uncertainty 
+
 
 ---
 # A (very fast) refresher on GLMs
@@ -845,10 +847,198 @@ knitr::include_graphics("figures/Scooby doo - GAM - bayes.jpg")
 .pull-right[ 
 
 * In this context: REML estimate of $\lambda$ is equivalent to the maximum a posteriori probability (MAP) estimate of the variance, with flat priors on fixed effects (i.e. unpenalized model terms) and penalties
-* This will be useful when we look at model uncertainties later on
+* Used in calculating model uncertainties
 
 ]
+
+
 ---
+
+# Evaluating uncertainty
+
+---
+
+## Example data: Number of positive flu tests in California in 2010-2011
+
+
+```{r load-flu, include= TRUE}
+
+flu <- read.csv(here('data',"california-flu-data.csv")) %>%
+  mutate(season = factor(season))
+
+flu2010 <- flu %>%
+  filter(season=="2010-2011")
+
+head(flu2010)
+```
+
+---
+
+## Example model: Test positivity rate over time
+
+
+```{r flu-positivity, eval = FALSE, echo=TRUE}
+# Modelling test positivity rate 
+flu2010_posmod <- gam(tests_pos ~ s(week_centered, k = 15) + offset(log(tests_total)),
+                            data= flu2010, 
+                            family = poisson,
+                            method = "REML")
+
+summary(flu2010_posmod)
+```
+
+
+---
+
+## Example model: Test positivity rate over time
+
+```{r include=TRUE}
+# Modelling test positivity rate 
+flu2010_posmod <- gam(tests_pos ~ s(week_centered, k = 15) + offset(log(tests_total)),
+                            data= flu2010, 
+                            family = poisson,
+                            method = "REML")
+
+summary(flu2010_posmod)
+```
+
+---
+
+## Confidence bands
+
+
+.row[
+.col-6[
+
+`plot()`
+
+```{r plot-richness-model}
+plot(flu2010_posmod)
+```
+]
+.col-6[
+
+`gratia::draw()`
+
+```{r draw-richness-model}
+draw(flu2010_posmod)
+```
+]
+]
+
+What do the bands represent?
+
+---
+
+# Confidence intervals for smooths
+
+Bands are a bayesian 95% credible interval on the smooth
+
+`plot.gam()` draws the band at &plusmn; **2** std. err.
+
+`gratia::draw()` draws them at $(1 - \alpha) / 2$ upper tail probability quantile of $\mathcal{N}(0,1)$
+
+`gratia::draw()` draws them at ~ &plusmn;**1.96** std. err. & user can change $\alpha$ via argument `ci_level`
+
+--
+
+So `gratia::draw()` draws them at ~ &plusmn;**2** st.d err
+
+---
+
+# Across the function intervals
+
+The *frequentist* coverage of the intervals is not pointwise &mdash; instead these credible intervals have approximately 95% coverage when *averaged* over the whole function
+
+Some places will have more than 95% coverage, other places less
+
+--
+
+Assumptions yielding this result can fail, where estimated smooth is a straight line
+
+--
+
+Correct this with `seWithMean = TRUE` in `plot.gam()` or `overall_uncertainty = TRUE` in `gratia::draw()`
+
+This essentially includes the uncertainty in the intercept in the uncertainty band
+
+---
+
+# Correcting for smoothness selection
+
+The defaults assume that the smoothness parameter(s) $\lambda_j$ are *known* and *fixed*
+
+--
+
+But we estimated them
+
+--
+
+Can apply a correction for this extra uncertainty via argument `unconditional = TRUE` in both `plot.gam()` and `gratia::draw()`
+
+---
+
+# But still, what do the bands represent?
+
+```{r plot-conf-band-plus-posterior-smooths, fig.height = 5}
+sm_fit <- smooth_estimates(flu2010_posmod, 's(week_centered)') # tidy data on smooth
+sm_post <- smooth_samples(flu2010_posmod, 's(week_centered)', n = 20, seed = 42) # more on this later
+draw(sm_fit) + geom_line(data = sm_post, aes(x = .x1, y = value, group = draw),
+                         alpha = 0.3, colour = 'red')
+```
+
+---
+
+
+# Making predictions with uncertainty
+
+---
+
+## Predicting with `predict()`
+
+`plot.gam()` and `gratia::draw()` show the **component functions** of the model on the **link** scale
+
+--
+
+## Making predictions at other scales
+
+Prediction (via the `predict` function) allows us to evaluate the model at known values of covariates on different scales:
+- response scale (`type = "response"`)
+- overall link scale (`type= "link"`)
+- Predictions for individual smooth terms (`type="terms"` or `type = "iterms"`)
+- For individual basis functions (`type ="lpmatrix"`)
+
+--
+
+Provide `newdata` with a data frame of values of covariates
+
+---
+
+## `predict()`
+
+```{r predict-newdata, echo = TRUE, eval = FALSE}
+new_flu <- with(flu2010, tibble(week_centered = seq(min(week_centered), max(week_centered), length.out = 100),
+                                 tests_total = 1))
+pred <- predict(flu2010_posmod, newdata = new_flu, se.fit = TRUE, type = 'link')
+pred <- bind_cols(new_flu, as_tibble(as.data.frame(pred)))
+pred
+```
+
+--- 
+
+
+```{r predict-newdata2, echo = TRUE, eval = FALSE}
+new_flu <- with(flu2010, tibble(week_centered = seq(min(week_centered), max(week_centered), length.out = 100),
+                                 tests_total = 1))
+pred <- predict(flu2010_posmod, newdata = new_flu, se.fit = TRUE, type = 'link')
+pred <- bind_cols(new_flu, as_tibble(as.data.frame(pred)))
+pred
+```
+
+---
+
+
+
 
 
 # To review:
@@ -868,6 +1058,8 @@ knitr::include_graphics("figures/Scooby doo - GAM - bayes.jpg")
 --
 
 * the penalty matrix for a given smooth, $\textbf{S}$, encodes how the shape of the function translates into the total size of the penalty
+
+
 
 --
 

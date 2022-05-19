@@ -14,6 +14,10 @@ flu_data <- flu_data_raw %>%
     week = lubridate::week(weekending_date),
     year = lubridate::year(weekending_date))%>%
   group_by(season)%>%
+  #This data is organized by Flu Season, which starts part way through October
+  #week-centered is centered around January of the focal year, so it does not
+  #appear like they occur after the later observations
+  #negative values correspond to weeks of the season from before January
   mutate(year_min = min(year),
          week_centered =ifelse(year==year_min, week-52,week))%>%
   transmute(season= factor(season), 
