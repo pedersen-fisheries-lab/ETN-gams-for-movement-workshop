@@ -42,7 +42,7 @@ GAMs are regression models: they fit *nonlinear* functions of covariates to pred
 - How do GAMs work? (*Roughly*)
 - What is smoothing?
 - Fitting and plotting simple models
-- Evaluating  model uncertainty 
+- Evaluating  model uncertainty and making predictions
 
 
 ---
@@ -621,12 +621,21 @@ pred
 
 
 
-```r
-new_flu &lt;- with(flu2010, tibble(week_centered = seq(min(week_centered), max(week_centered), length.out = 100),
-                                 tests_total = 1))
-pred &lt;- predict(flu2010_posmod, newdata = new_flu, se.fit = TRUE, type = 'link')
-pred &lt;- bind_cols(new_flu, as_tibble(as.data.frame(pred)))
-pred
+```
+## # A tibble: 100 x 4
+##    week_centered tests_total   fit se.fit
+##            &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+##  1        -11              1 -4.65  0.358
+##  2        -10.5            1 -4.70  0.304
+##  3         -9.97           1 -4.73  0.258
+##  4         -9.45           1 -4.75  0.224
+##  5         -8.94           1 -4.75  0.201
+##  6         -8.42           1 -4.72  0.187
+##  7         -7.91           1 -4.66  0.179
+##  8         -7.39           1 -4.56  0.170
+##  9         -6.88           1 -4.44  0.159
+## 10         -6.36           1 -4.29  0.146
+## # ... with 90 more rows
 ```
 
 ---

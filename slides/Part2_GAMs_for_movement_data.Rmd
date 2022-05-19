@@ -1,5 +1,5 @@
 ---
-title: "GAMs for movement data: interactions, special families, and key considerations"
+title: "GAMs for movement data: families, interactions,  and dealing with autocorrelation"
 author: "Eric Pedersen"
 output:
   xaringan::moon_reader:
@@ -72,7 +72,9 @@ These are good models, but there's lots more to see!
   - Individual-specific curves (HGAMs)
   
   
-- (if time) Headaches and nightmares: dealing with autocorrelation in data
+- (if time) Headaches and nightmares with movement data:
+  - Speeding up computation for big data
+  - dealing with autocorrelation in data
 
 
 ---
@@ -146,7 +148,7 @@ species_resid_plot
 ```
 ---
 
-# Special count distributions
+# Special "count-like" distributions
 
 
 Other options?
@@ -164,8 +166,8 @@ Other options?
 --
 
 - `tw`/`Tweedie` ( $y \geq 0$)
-  - great for CPUE-type data
-  - works on non-count positive data as well
+  - Can handle both zero and positive values
+  - Example usage: depth from bottom for benthopelagic species
   - $\text{Var}\left(\text{y}\right) = \phi\mathbb{E}(\text{y})^q$
 
 ---
@@ -209,7 +211,15 @@ legend(x="topright", legend=disps, fill=rr, inset=0.05)
 
 ## Families of special interest for movement ecologists:
 
-- Cox Proportional Hazarrd
+- Cox Proportional Hazard: 
+
+  - Model of "survival data": modelling relative probabilities of "survival" or "death" as function of covariates
+  - Used for step selection: "death" = taken step, "survival" = alternative step
+  
+
+
+
+
 
 ---
 
@@ -363,7 +373,7 @@ summary(spatial_shrimp)
 
 class: inverse middle center big-subsection
 
-## Now give it a try!
+#  Let's try this with an example
 
 
 ---
