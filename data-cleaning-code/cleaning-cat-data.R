@@ -98,7 +98,7 @@ panther_altsteps <- panther %>%
     #randomly rotate the sampled angles for each distance class to increase
     #coverage of potential turn angles 
     abs_angle = abs_angle + runif(1, 0,2*pi),
-    abs_angle = abs_angle%/%(2*pi),
+    abs_angle = abs_angle%%(2*pi),
     #randomly perturb the step lengths to increase coverage of the step-length
     #distribution sampled
     step_length = step_length*rlnorm(n(), 0,0.1))%>%
