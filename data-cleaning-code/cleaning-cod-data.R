@@ -21,7 +21,7 @@ cod_filtered <- cod_move%>%
   mutate(datetime = lubridate::as_datetime(DATETIME))%>%
   group_by(DETECTEDID)%>%
   mutate(days_from_tag = time_length(datetime - min(datetime),unit="days"),
-         days_from_tag = as.numeric(days_from_start),
+         days_from_tag = as.numeric(days_from_tag),
          week = as.numeric(week(datetime)))%>%
   dplyr::select(datetime,
                 days_from_tag, 
@@ -44,7 +44,9 @@ cod_filtered <- cod_move%>%
   mutate(depth_m = ifelse(depth_m<0,-depth_m, depth_m),
          indiv   = factor(indiv))%>%
   #remove a couple very separated observations from one fish
-  filter(!(indiv=="A69-9002-011784"&days_from_start>200))%>%
+  filter(!(indiv=="A69-9002-011784"&days_from_tag>200))%>%
   group_by(indiv)%>%
   mutate(start_index= c(TRUE, rep(FALSE,times= n()-1)))
+
+write.csv(cod_filtered,file = "data/cod_move.csv")
   
