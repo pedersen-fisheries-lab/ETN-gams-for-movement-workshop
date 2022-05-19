@@ -255,12 +255,14 @@ plot(speed_space_mod)
 # Now a model for depth that lets the week-effect vary with 
 
 
-depth_week_interaction <- gam(dist_from_bottom_m~te(week, T1m), 
+depth_week_interaction <- gam(dist_from_bottom_m~te(week, T1m, bs=c("cc","tp")), 
                               data= cod_move, 
                               family=tw, 
                               method="REML")
 
 plot(depth_week_interaction,scheme=2)
+
+
 
 ## 3.3 HGAM models:
 
@@ -282,6 +284,16 @@ depth_week_indiv<- gam(dist_from_bottom_m~s(week, cod, bs="fs"),
                               method="REML")
 
 plot(depth_week_indiv, page=1)
+
+##This can also be done using a tensor-product:
+
+#depth_week_indiv<- gam(dist_from_bottom_m~t2(week, cod, bs= c("tp","re")), 
+#                       data= cod_move, 
+#                       family=tw, 
+#                       method="REML")
+
+
+
 
 ## Allowing each term to have its own smoothness:
 
