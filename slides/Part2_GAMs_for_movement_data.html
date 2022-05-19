@@ -501,51 +501,36 @@ shrimp_te &lt;- gam(shrimp ~ te(log10(depth), temp_bottom),
 - Setting `bs` in two  ways:
   - `bs="tp"`: tprs for all bases
   - `bs=c("tp", "tp")`: tprs per basis
-
+  
 ---
 
-# Pulling `te()` apart: `ti()`
+## Modelling individual variation in smooths with HGAMs
 
-- Can we look at the components of the `te()`
-- `te(x, y) = ti(x, y) + ti(x) + ti(y)`
+* Individual variation in nonlinear relationships is just a different kind of interaction:  a Smooth-by-factor relationship
+
+* Can be fit with `te`/`t2` terms just like other interactions, or with `by=` argument
+
+--
+
+* Need to decide: 
+  - Do you need a global smoother +indiv var, or just indiv var?
+  - Shared smoothness for individuals or not?
+  
+  
+---
+
+## The HGAM decision tree
+
 
 
 ```r
-shrimp_ti &lt;- gam(shrimp ~ ti(temp_bottom, depth) +
-                          s(temp_bottom) + s(depth),
-                data=trawls_2010,
-                family=tw,
-                method="REML")
+knitr::include_graphics(here("figures/HGAM-fig.png"))
 ```
 
----
-
-# `summary`
-
-
-```
-## 
-## Family: Tweedie(p=1.591) 
-## Link function: log 
-## 
-## Formula:
-## shrimp ~ ti(temp_bottom, depth) + s(temp_bottom) + s(depth)
-## 
-## Parametric coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)
-## (Intercept)    1.672      1.067   1.568    0.118
-## 
-## Approximate significance of smooth terms:
-##                         edf Ref.df      F  p-value    
-## ti(temp_bottom,depth) 7.417  8.860  4.177 0.000459 ***
-## s(temp_bottom)        5.661  6.850  1.703 0.081067 .  
-## s(depth)              6.592  7.238 10.177  &lt; 2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## R-sq.(adj) =  0.349   Deviance explained = 66.7%
-## -REML = 1951.7  Scale est. = 8.1639    n = 482
-```
+&lt;div class="figure"&gt;
+&lt;img src="../figures/HGAM-fig.png" alt="Pedersen et al. 2019,PeerJ: 'Hierarchical generalized additive models in ecology: an introduction with mgcv' Figure 4" width="1368" /&gt;
+&lt;p class="caption"&gt;Pedersen et al. 2019,PeerJ: 'Hierarchical generalized additive models in ecology: an introduction with mgcv' Figure 4&lt;/p&gt;
+&lt;/div&gt;
 
 ---
 

@@ -551,28 +551,30 @@ summary(shrimp_te)
 - Setting `bs` in two  ways:
   - `bs="tp"`: tprs for all bases
   - `bs=c("tp", "tp")`: tprs per basis
-
+  
 ---
 
-# Pulling `te()` apart: `ti()`
+## Modelling individual variation in smooths with HGAMs
 
-- Can we look at the components of the `te()`
-- `te(x, y) = ti(x, y) + ti(x) + ti(y)`
+* Individual variation in nonlinear relationships is just a different kind of interaction:  a Smooth-by-factor relationship
 
-```{r tiex}
-shrimp_ti <- gam(shrimp ~ ti(temp_bottom, depth) +
-                          s(temp_bottom) + s(depth),
-                data=trawls_2010,
-                family=tw,
-                method="REML")
-```
+* Can be fit with `te`/`t2` terms just like other interactions, or with `by=` argument
 
+--
+
+* Need to decide: 
+  - Do you need a global smoother +indiv var, or just indiv var?
+  - Shared smoothness for individuals or not?
+  
+  
 ---
 
-# `summary`
+## The HGAM decision tree
 
-```{r ti-ex-summary, echo=FALSE}
-summary(shrimp_ti)
+
+```{r, fig.cap="Pedersen et al. 2019,PeerJ: 'Hierarchical generalized additive models in ecology: an introduction with mgcv' Figure 4"}
+
+knitr::include_graphics(here("figures/HGAM-fig.png"))
 ```
 
 ---
