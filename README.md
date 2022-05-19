@@ -37,7 +37,7 @@ The course website URL  available at [pedersen-fisheries-lab.github.io/ETN-gams-
 
 [Part 1 slides](slides/part1_Intro_to_GAMs.html)
 
-[Part 1 script](scripts/)
+[Part 1 script](scripts/part1_intro_to_gams.R)
 
 
 
@@ -45,7 +45,7 @@ The course website URL  available at [pedersen-fisheries-lab.github.io/ETN-gams-
 
 [Part 2 slides](slides/Part2_GAMs_for_movement_data.html)
 
-[Part 2 script](scripts/Part2_GAMS_for_movement_data.R)
+[Part 2 script](scripts/part2_families_and_interactions.R)
 
 ## Extra resources:
 
