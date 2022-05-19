@@ -16,7 +16,7 @@ cod_counts <- cod_move%>%
   summarize(n=n())%>%
   arrange(desc(n))
 
-seconds_per_day <- 24*60*60
+minutes_per_day <- 24*60
 
 cod_filtered <- cod_move%>%
   filter(DETECTEDID %in% cod_counts$DETECTEDID[1:4])%>%
@@ -60,7 +60,10 @@ cod_filtered <- cod_move%>%
     dist_from_bottom_m = bdepth_m - depth_m,
     #negative values will get re-coded as zeros
     dist_from_bottom_m = ifelse(dist_from_bottom_m<0,0,dist_from_bottom_m),
-    speed_mps = sqrt((x-dplyr::lag(x))^2+(y-dplyr::lag(y))^2)/(days_from_tag-lag(days_from_tag))*(1/seconds_per_day))
+    speed_mpmin = sqrt((x-dplyr::lag(x))^2+(y-dplyr::lag(y))^2)/(days_from_tag-lag(days_from_tag))*(1/minutes_per_day),
+    speed_mpmin = ifelse(speed_mpmin==0, min(speed_mpmin[speed_mpmin>0]),speed_mpmin))%>%
+  ungroup()%>%
+  arrange(indiv, days_from_tag)
     
 
 write.csv(cod_filtered,file = "data/cod_move.csv")

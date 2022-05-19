@@ -248,9 +248,10 @@ dryforest_map <- ggplot() +
 
 classification_labels <- classification%>%
   transmute(cover_type = factor(ChangeTo),
-         cover_label = Description2)%>%
+         habitat = Description2)%>%
   group_by(cover_type)%>%
-  summarize( cover_label = cover_label[1])
+  #make sure there is only a single row for each habitat label
+  summarize( habitat = habitat[1])
 
 #extracts covariates
 panther_steps_withcovs <- st_join(panther_steps,

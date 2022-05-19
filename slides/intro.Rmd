@@ -114,9 +114,10 @@ knitr::include_graphics("figures/collaborator images.jpg")
 
 Won't have time to cover in depth:
 
-* Measuring uncertainty for complex smooths
 
 * Evaluating model fit
+
+* A lot of the mathematical details
 
 See our prior workshop material for more info on these
 
