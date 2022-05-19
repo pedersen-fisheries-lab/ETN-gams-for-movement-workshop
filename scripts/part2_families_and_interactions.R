@@ -5,6 +5,7 @@ library(dplyr)
 library(tidyr)
 library(gratia)
 
+
 ##1. New families with 1-d smoothers ####
 
 ##1.1 Modelling speed with a Gamma distribution ----
@@ -94,8 +95,18 @@ plot(bottom_dist_mod)
 
 
 panther_steps <- read.csv("data/panther_stepsel.csv")%>%
-  mutate(habitat = factor(habitat))
+  mutate(habitat = factor(habitat),
+         CatID = factor(CatID))
 
+# Let's plot the data:
+
+panther_steps_plot <- ggplot(panther_steps, 
+                             aes(x=X,y=Y,color=CatID))+
+  facet_wrap(~is_obs)+
+  geom_point()+
+  coord_equal()
+
+print(panther_steps_plot)
 
 
 #This model just fits a step-selection model to the step length and turn angle
@@ -170,13 +181,13 @@ plot(speed_mod2_bam)
 # You can also set `discrete = TRUE` to speed up calculations (not just memory
 # usage). be careful, because this is still somewhat in development
 
-speed_mod3_bam <- bam(speed_mpmin~ s(days_from_tag,k=50),
+speed_mod2_bam2 <- bam(speed_mpmin~ s(days_from_tag,k=50),
                       data= filter(cod_move, cod=="A"),
                       family = Gamma(link="log"),
                       discrete = TRUE,
                       method = "fREML")
 
-plot(speed_mod3_bam)
+plot(speed_mod2_bam2)
 
 ## 2.2 Using a spatial smoother to account for dependency ----
 
@@ -225,4 +236,60 @@ plot(homerange_model2,page=1, scale=0)
 #compare with the original:
 plot(homerange_model,page=1, scale=0)
 
+
+##3: Interactions and HGAMS ####
+
+##3.1 Isotrophic smooths for space ----
+
+# Let's fit a model for movement speed that varies with where a fish is:
+
+speed_space_mod <- gam(speed_mpmin~ s(x,y, k= 50),
+                                         family = Gamma(link="log"),
+                                         method = "fREML")
+
+plot(speed_space_mod)
+
+##3.2 Non-isotropic interactions
+
+
+# Now a model for depth that lets the week-effect vary with 
+
+
+depth_week_interaction <- gam(dist_from_bottom_m~te(week, T1m), 
+                              data= cod_move, 
+                              family=tw, 
+                              method="REML")
+
+plot(depth_week_interaction,scheme=2)
+
+## 3.3 HGAM models:
+
+#adding individual-level variation is just a matter of adding an interaction
+
+#model with a global term and an individual-level term, shared smooth
+depth_week_indiv_global <- gam(dist_from_bottom_m~s(week, cod, bs="fs")+ s(week), 
+                              data= cod_move, 
+                              family=tw, 
+                              method="REML")
+
+plot(depth_week_indiv_global, page=1)
+
+#Model without a global term:
+
+depth_week_indiv<- gam(dist_from_bottom_m~s(week, cod, bs="fs"), 
+                              data= cod_move, 
+                              family=tw, 
+                              method="REML")
+
+plot(depth_week_indiv, page=1)
+
+## Allowing each term to have its own smoothness:
+
+#Need a random-effect smoother to include individual-level var in the intercept
+depth_week_indiv2<- gam(dist_from_bottom_m~s(week, by=cod) + s(cod, bs="re"), 
+                       data= cod_move, 
+                       family=tw, 
+                       method="REML")
+
+plot(depth_week_indiv2, page=1)
 
