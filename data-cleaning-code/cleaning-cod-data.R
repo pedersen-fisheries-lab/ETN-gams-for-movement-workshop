@@ -16,6 +16,8 @@ cod_counts <- cod_move%>%
   summarize(n=n())%>%
   arrange(desc(n))
 
+seconds_per_day <- 24*60*60
+
 cod_filtered <- cod_move%>%
   filter(DETECTEDID %in% cod_counts$DETECTEDID[1:4])%>%
   mutate(datetime = lubridate::as_datetime(DATETIME))%>%
@@ -28,14 +30,18 @@ cod_filtered <- cod_move%>%
                 jul,
                 week,
                 DETECTEDID,
+                x,
+                y,
                 LON,
                 LAT,
                 DEPTH, 
                 Bottomdepth,
                 Habitat, 
                 T1m:T33m)%>%
-  dplyr::rename(lon= LON,
-         lat = LAT,
+  dplyr::rename(x = x,
+                y= y, 
+                lon= LON, 
+                lat = LAT,
          indiv = DETECTEDID,
          depth_m = DEPTH,
          bdepth_m = Bottomdepth,
@@ -43,10 +49,19 @@ cod_filtered <- cod_move%>%
          juldate = jul)%>%
   mutate(depth_m = ifelse(depth_m<0,-depth_m, depth_m),
          indiv   = factor(indiv))%>%
-  #remove a couple very separated observations from one fish
+  #remove a couple very separated from the rest of observations from one fish
   filter(!(indiv=="A69-9002-011784"&days_from_tag>200))%>%
   group_by(indiv)%>%
-  mutate(start_index= c(TRUE, rep(FALSE,times= n()-1)))
+  arrange(days_from_tag)%>%
+  mutate(
+    #this is useful for segregating observations into time series for
+    #autoregressive modelling in bam
+    start_index= c(TRUE, rep(FALSE,times= n()-1)),
+    dist_from_bottom_m = bdepth_m - depth_m,
+    #negative values will get re-coded as zeros
+    dist_from_bottom_m = ifelse(dist_from_bottom_m<0,0,dist_from_bottom_m),
+    speed_mps = sqrt((x-dplyr::lag(x))^2+(y-dplyr::lag(y))^2)/(days_from_tag-lag(days_from_tag))*(1/seconds_per_day))
+    
 
 write.csv(cod_filtered,file = "data/cod_move.csv")
   
